@@ -3,10 +3,17 @@ import "./Card.scss";
 
 function Card({ card }) {
   return (
-    <li className="card-item">
-      {card.cover && <img src={card.cover} className="card-cover" alt="" />}
+    <div className="card-item">
+      {card.cover && (
+        <img
+          src={card.cover}
+          className="card-cover"
+          alt=""
+          onMouseDown={(e) => e.preventDefault()}
+        />
+      )}
       {card.title}
-    </li>
+    </div>
   );
 }
 
