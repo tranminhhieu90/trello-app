@@ -8,8 +8,11 @@ body {
 }
 .trello-master {
   height: 100vh;
-  // display: grid;
   overflow-y: hidden;
-  // grid-template-rows: 40px 50px 1fr; // grid layout by row , row 1: 40px, row 2: 50px , con lai la 1 fr(KHUNG HINH)
   background-color: $board-bg-color;
+  color: $app-main-text-color;
+  .icon {
+    font-size: 14px;
+    margin-right: 3px;
+  }
 }

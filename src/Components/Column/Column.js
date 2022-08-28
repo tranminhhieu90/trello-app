@@ -3,11 +3,11 @@ import "./Column.scss";
 import Card from "Components/Card/Card";
 import { mapOrder } from "utilities/sorts";
 import { Container, Draggable } from "react-smooth-dnd";
-function Column({ column }) {
+function Column({ column, handleOnCardDrop }) {
   const cards = mapOrder(column.cards, column.cardOrder, "id");
 
-  const onCardDrop = (dropResult) => {
-    console.log("dropResult", dropResult);
+  const onCardDrop = (columnId, dropResult) => {
+    handleOnCardDrop(columnId, dropResult);
   };
   return (
     <div className="column">
@@ -16,7 +16,7 @@ function Column({ column }) {
         <Container
           orientation="vertical"
           groupName="trello-columns"
-          onDrop={onCardDrop}
+          onDrop={(dropResult) => onCardDrop(column.id, dropResult)}
           getChildPayload={(index) => cards[index]}
           dragClass="card-ghost"
           dropClass="card-ghost-drop"
@@ -34,7 +34,12 @@ function Column({ column }) {
           ))}
         </Container>
       </div>
-      <footer>Add another card</footer>
+      <footer>
+        <div className="footer-actions">
+          <i className="fa fa-plus icon" />
+          Add another card
+        </div>
+      </footer>
     </div>
   );
 }

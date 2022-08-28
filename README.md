@@ -9,6 +9,7 @@
 
    - eslint.json
    - eslintignore
+     npm run eslint
 
 3. react-beautiful-dnd
 4. recommends react-smooth-dnd
