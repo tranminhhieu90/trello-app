@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./BoardContent.scss";
 import Column from "Components/Column/Column";
 import { initialData } from "actions/initialData";
@@ -6,10 +6,20 @@ import * as _ from "lodash";
 import { mapOrder } from "utilities/sorts";
 import { Container, Draggable } from "react-smooth-dnd";
 import { applyDrag } from "utilities/smoothDnd";
+import {
+  Container as BootstrapContainer,
+  Col,
+  Row,
+  Form,
+} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 function BoardContent() {
   const [board, setBoard] = useState({});
   const [columns, setColumns] = useState([]);
+  const [openNewColumnForm, setOpenNewColumnForm] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState("");
 
+  const newColumnInputRef = useRef(null);
   useEffect(() => {
     const boardFromDB = initialData.boards.find(
       (board) => board.id === "board-1"
@@ -20,6 +30,14 @@ function BoardContent() {
       setColumns(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, "id"));
     }
   }, []);
+
+  useEffect(() => {
+    if (newColumnInputRef && newColumnInputRef.current) {
+      newColumnInputRef.current.focus();
+      newColumnInputRef.current.select();
+    }
+  }, [openNewColumnForm]);
+
   if (_.isEmpty(board))
     return (
       <div className="not-found" style={{ padding: 10, color: "white" }}>
@@ -46,6 +64,38 @@ function BoardContent() {
       setColumns(newColumns);
     }
   };
+
+  const toggleOpenNewColumnForm = () => {
+    setOpenNewColumnForm(!openNewColumnForm);
+  };
+
+  const addNewColumn = () => {
+    if (!newColumnTitle) {
+      newColumnInputRef.current.focus();
+      return;
+    }
+    const newColumnToAdd = {
+      id: Math.random().toString(36).substring(2, 5),
+      boardId: board.id,
+      title: newColumnTitle.trim(),
+      cardOrder: [],
+      cards: [],
+    };
+    let newColumns = [...columns];
+    newColumns.push(newColumnToAdd);
+
+    let newBoard = { ...board };
+    newBoard.columnOrder = newColumns.map((column) => column.id);
+    newBoard.columns = newColumns;
+
+    setColumns(newColumns);
+    setBoard(newBoard);
+    setNewColumnTitle("");
+    toggleOpenNewColumnForm();
+  };
+  const onNewColumnTitleChange = (e) => {
+    setNewColumnTitle(e.target.value);
+  };
   return (
     <div className="board-content">
       <Container
@@ -65,10 +115,41 @@ function BoardContent() {
           </Draggable>
         ))}
       </Container>
-      <div className="add-new-column">
-        <i className="fa fa-plus icon" />
-        Add new column
-      </div>
+      <BootstrapContainer className="bootstrap-container">
+        {!openNewColumnForm && (
+          <Row>
+            <Col className="add-new-column" onClick={toggleOpenNewColumnForm}>
+              <i className="fa fa-plus icon" />
+              Add new column
+            </Col>
+          </Row>
+        )}
+        {openNewColumnForm && (
+          <Row>
+            <Col className="enter-new-column">
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Enter column"
+                className="input-enter-new-column"
+                ref={newColumnInputRef}
+                value={newColumnTitle}
+                onChange={onNewColumnTitleChange}
+                onKeyDown={(e) => e.key === "Enter" && addNewColumn()}
+              />
+              <Button variant="success" onClick={addNewColumn}>
+                Add new column
+              </Button>
+              <span className="cancel-new-column">
+                <i
+                  className="fa fa-trash icon"
+                  onClick={toggleOpenNewColumnForm}
+                ></i>
+              </span>
+            </Col>
+          </Row>
+        )}
+      </BootstrapContainer>
     </div>
   );
 }
