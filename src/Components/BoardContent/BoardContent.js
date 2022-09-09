@@ -163,7 +163,7 @@ function BoardContent() {
               <Button variant="success" onClick={addNewColumn}>
                 Add new column
               </Button>
-              <span className="cancel-new-column">
+              <span className="cancel-icon">
                 <i
                   className="fa fa-trash icon"
                   onClick={toggleOpenNewColumnForm}
